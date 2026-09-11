@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+
+process.env.SUPABASE_URL='https://example.test';
+process.env.SUPABASE_PUBLISHABLE_KEY='public-test';
+process.env.SUPABASE_SECRET_KEY='server-only-test';
+delete process.env.ADMIN_EMAIL;
+const unconfigured=await import('../lib/supabase.js?admin-missing');
+assert.equal(unconfigured.isAdmin({email:'',email_confirmed_at:'yes'}),false);
+assert.equal(unconfigured.isAdmin({email:'admin@example.com',email_confirmed_at:'yes'}),false);
+process.env.ADMIN_EMAIL='   ';
+const blank=await import('../lib/supabase.js?admin-blank');
+assert.equal(blank.isAdmin({email:'',email_confirmed_at:'yes'}),false);
+process.env.ADMIN_EMAIL=' Admin@Example.com ';
+const configured=await import('../lib/supabase.js');
+assert.equal(configured.isAdmin({email:'ADMIN@example.com',email_confirmed_at:'yes'}),true);
+assert.equal(configured.isAdmin({email:'admin@example.com'}),false);
+assert.equal(configured.isAdmin({email:'other@example.com',email_confirmed_at:'yes',user_metadata:{role:'admin'}}),false);
+const {default:config}=await import('../api/config.js');
+let status,body;
+const response={setHeader(){},status(value){status=value;return this;},json(value){body=value;}};
+config({method:'GET'},response);
+assert.equal(status,200);
+assert.deepEqual(Object.keys(body).sort(),['appVersion','supabasePublishableKey','supabaseUrl']);
+assert.equal(JSON.stringify(body).includes(process.env.SUPABASE_SECRET_KEY),false);
+assert.equal(JSON.stringify(body).includes('Admin@Example.com'),false);
+console.log('PASS environment security: missing/blank admin denies access, verified configured admin only, public config contains no server secrets.');
