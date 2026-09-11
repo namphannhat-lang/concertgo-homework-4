@@ -1,0 +1,19 @@
+# Secrets: only empty/example templates belong in Git.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Generated/runtime files
+__pycache__/
+*.py[cod]
+node_modules/
+.vercel/
+supabase/.temp/
+supabase/.branches/
+*.log
+.DS_Store
+Thumbs.db

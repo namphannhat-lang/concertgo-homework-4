@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ConcertGo — web demo đặt vé concert trực tuyến.">
+  <title>ConcertGo — Đặt vé concert</title>
+  <link rel="stylesheet" href="style.css?v=booking-review-20260911-2">
+  <style>
+    .header-actions{display:flex;align-items:center;gap:10px}.header-link{border:1px solid var(--line);background:transparent;padding:10px 14px;border-radius:4px;font-size:13px}.auth-screen{max-width:520px;margin:auto;padding:60px 24px 100px}.auth-screen h2{font:52px Georgia,serif;margin:12px 0 22px}.auth-tabs{display:grid;grid-template-columns:1fr 1fr;margin-bottom:25px}.auth-tabs button{height:44px;border:1px solid var(--line);background:transparent}.auth-tabs button.active{background:var(--card);border-color:#ff6a75}.auth-form{display:grid;gap:18px}.auth-form label{font-size:13px;font-weight:700}.auth-form input{display:block;width:100%;padding:15px;margin-top:8px;border:1px solid var(--line);border-radius:4px;background:#201d1f;color:#fff}.auth-message{min-height:22px;color:var(--muted);line-height:1.5}.auth-user{font-size:12px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis}.bookings-screen{max-width:1100px;margin:auto;padding:44px 24px 90px}.bookings-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:24px}.bookings-head h2{font:52px Georgia,serif;margin:12px 0 0}.booking-list{display:grid;gap:12px}.booking-person{display:grid;grid-template-columns:1.2fr 1fr 1fr auto auto;gap:20px;align-items:center;padding:18px 20px;border:1px solid var(--line);background:var(--card)}.booking-person strong,.booking-person span{overflow-wrap:anywhere}.booking-person small{display:block;color:var(--muted);margin-bottom:6px}.booking-status{padding:7px 10px;border:1px solid var(--line);border-radius:99px;font-size:12px}.booking-actions{display:flex;gap:7px}.booking-actions button{padding:8px 11px;border:1px solid var(--line);background:transparent;border-radius:3px}.booking-actions .delete-booking{color:#ff9c9c}.list-message{padding:28px;border:1px dashed var(--line);color:var(--muted);text-align:center}@media(max-width:700px){.header-actions p,.auth-user{display:none}.header-actions .header-link{padding:9px;font-size:12px}.bookings-head{align-items:stretch;flex-direction:column}.bookings-head h2,.auth-screen h2{font-size:40px}.booking-person{grid-template-columns:1fr 1fr}.booking-person>div:first-child{grid-column:1/-1}.booking-actions{grid-column:1/-1}.booking-actions button{flex:1}}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <button class="brand" id="homeButton" aria-label="Về trang chủ"><span>CG</span>ConcertGo</button>
+    <div class="header-actions"><span class="auth-user" id="authUser"></span><button class="header-link" id="bookingsButton">Vé đã đặt</button><button class="header-link" id="authButton">Đăng nhập</button><p>Bản trải nghiệm · Không thanh toán thật</p></div>
+  </header>
+
+  <main>
+    <section id="discoverScreen" class="screen active">
+      <div class="hero">
+        <div>
+          <p class="eyebrow">CONCERT HÀNG ĐẦU VIỆT NAM</p>
+          <h1>Đêm nhạc <span class="hero-word">khiến</span><br><em>trái tim rung động.</em></h1>
+          <p class="lead">Khám phá các concert diễn ra tại Việt Nam, chọn đêm nhạc yêu thích và đặt vé chỉ trong vài bước.</p>
+          <button class="primary" data-open-tickets>Khám phá concert →</button>
+        </div>
+        <div class="hero-art" role="img" aria-label="Minh họa sân khấu concert">
+          <span class="sun"></span><div class="date"><strong>24</strong><span>THÁNG 10<br>2026</span></div><p>Âm nhạc kết nối mọi miền Việt Nam</p>
+        </div>
+      </div>
+      <div class="concert-tools"><button class="primary" id="addConcertButton" hidden type="button">+ Thêm concert</button></div>
+      <p id="concertFeedback" class="concert-feedback" role="status"></p>
+      <div id="additionalConcerts"></div>
+    </section>
+
+    <section id="authScreen" class="screen auth-screen">
+      <button class="back" data-go="discoverScreen">← Quay lại trang chủ</button>
+      <p class="eyebrow">TÀI KHOẢN CONCERTGO</p><h2 id="authTitle">Đăng nhập</h2>
+      <div class="auth-tabs"><button id="loginTab" class="active" type="button">Đăng nhập</button><button id="registerTab" type="button">Đăng ký</button></div>
+      <form id="authForm" class="auth-form">
+        <label>Email<input id="authEmail" type="email" autocomplete="email" required placeholder="ban@email.com"></label>
+        <label>Mật khẩu<input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="Tối thiểu 6 ký tự"></label>
+        <button class="primary wide" id="authSubmit" type="submit">Đăng nhập</button>
+        <p class="auth-message" id="authMessage" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="ticketsScreen" class="screen booking">
+      <button class="back" data-go="discoverScreen">← Quay lại khám phá</button>
+      <p class="eyebrow" id="ticketConcertTitle">CHẠM VÀO THANH ÂM</p><h2>Chọn hạng vé</h2>
+      <div class="tickets" id="ticketList"></div>
+      <div class="selection">
+        <div><small>Số lượng · Tối đa 6 vé</small><div class="quantity"><button id="minus" aria-label="Giảm số lượng">−</button><strong id="quantity">—</strong><button id="plus" aria-label="Tăng số lượng">+</button></div></div>
+        <div><small>Tổng cộng</small><strong id="total">Chưa chọn vé</strong></div>
+        <button class="primary" id="continueButton" disabled>Tiếp tục đặt vé →</button>
+      </div>
+    </section>
+
+    <section id="detailsScreen" class="screen checkout">
+      <button class="back" data-go="ticketsScreen">← Quay lại chọn vé</button>
+      <div class="two-columns"><div><p class="eyebrow">BƯỚC 2 / 3</p><h2>Thông tin người đặt</h2><p class="muted">Kiểm tra thông tin liên hệ trước khi xác nhận đơn đặt vé.</p>
+        <form id="buyerForm" novalidate>
+          <label>Họ và tên<input id="buyerName" autocomplete="name" placeholder="Nguyễn Minh Anh"><small class="error" id="nameError"></small></label>
+          <label>Email<input id="buyerEmail" type="email" autocomplete="email" placeholder="minhanh@email.com"><small class="error" id="emailError"></small></label>
+          <label>Số điện thoại<input id="buyerPhone" inputmode="numeric" autocomplete="tel" placeholder="090 123 4567"><small class="error" id="phoneError"></small></label>
+          <button class="primary wide" type="submit">Kiểm tra đơn →</button>
+        </form></div><div id="detailsSummary"></div></div>
+    </section>
+
+    <section id="reviewScreen" class="screen checkout">
+      <button class="back" data-go="detailsScreen">← Chỉnh sửa thông tin</button>
+      <div class="two-columns"><div><p class="eyebrow">BƯỚC 3 / 3</p><h2>Kiểm tra đơn</h2><div class="buyer-box"><small>Người đặt</small><strong id="reviewName"></strong><p id="reviewContact"></p></div>
+        <button class="primary wide" id="payButton">Xác nhận & thanh toán</button><p class="notice" id="saveNotice">Không yêu cầu thẻ hoặc thông tin ngân hàng.</p>
+      </div><div id="reviewSummary"></div></div>
+    </section>
+
+    <section id="resultScreen" class="screen result" aria-live="polite">
+      <div class="result-icon" id="resultIcon"></div><p class="eyebrow">KẾT QUẢ ĐẶT VÉ</p><h2 id="resultTitle"></h2><p class="muted" id="resultMessage"></p><div class="booking-code-box" hidden><p>Mã đặt vé của bạn</p><strong class="booking-code" id="resultBookingCode"></strong></div><p id="resultNotification" aria-live="polite"></p><div id="resultSummary"></div>
+      <div class="result-actions"><button class="primary" id="retryButton">Thử lại</button><button class="secondary" id="restartButton">Về danh sách concert</button></div>
+    </section>
+
+    <section id="bookingsScreen" class="screen bookings-screen">
+      <button class="back" data-go="discoverScreen">← Quay lại trang chủ</button>
+      <div class="bookings-head"><div><p class="eyebrow" id="bookingEyebrow">VÉ CỦA TÔI</p><h2 id="bookingsTitle">Vé đã đặt</h2></div><button class="secondary" id="refreshBookings">Làm mới</button></div>
+      <p id="bookingFeedback" role="status"></p><div id="bookingList" class="booking-list" aria-live="polite"></div>
+    </section>
+  </main>
+  <dialog id="concertDialog" aria-labelledby="concertTitle">
+    <form id="concertForm" class="auth-form">
+      <h2 id="concertTitle">Thêm concert</h2>
+      <p class="muted">Nhập thông tin concert và ít nhất một hạng vé. Giá tính bằng đồng Việt Nam.</p>
+      <label>Tên concert<input name="title" required maxlength="160" placeholder="Nhập tên concert"></label>
+      <fieldset class="concert-date"><legend>Ngày và giờ diễn ra (giờ Việt Nam)</legend>
+        <div class="concert-date-grid"><label>Ngày<select id="concertDay" required></select></label><label>Tháng<select id="concertMonth" required></select></label><label>Năm<select id="concertYear" required></select></label><label>Giờ<select id="concertHour" required></select></label><label>Phút<select id="concertMinute" required></select></label></div>
+      </fieldset>
+      <label>Địa điểm<input name="venue" required maxlength="240" placeholder="Tên địa điểm, thành phố"></label>
+      <fieldset class="concert-tickets"><legend>Hạng vé và giá vé</legend><div id="concertTicketRows"></div><button type="button" class="secondary" id="addTicketType">+ Thêm hạng vé</button></fieldset>
+      <p id="concertMessage" role="alert"></p>
+      <div class="result-actions"><button type="button" id="cancelConcert" class="secondary">Hủy</button><button id="saveConcert" class="primary" type="submit">Thêm concert</button></div>
+    </form>
+  </dialog>
+  <dialog id="concertDeleteDialog" aria-labelledby="concertDeleteTitle"><h2 id="concertDeleteTitle">Xóa concert?</h2><p id="concertDeleteDetail"></p><p>Concert sẽ bị gỡ khỏi danh sách và ngừng nhận đặt vé. Lịch sử đơn đã đặt được giữ lại.</p><p id="concertDeleteMessage" role="alert"></p><div class="result-actions"><button type="button" id="cancelConcertDelete" class="secondary">Hủy</button><button type="button" id="confirmConcertDelete" class="primary">Xóa concert</button></div></dialog>
+  <dialog id="bookingDialog" aria-labelledby="adminTitle"><form id="adminForm" class="auth-form"><h2 id="adminTitle">Chi tiết đặt vé</h2><p id="adminDetail"></p><p class="muted">Chỉnh sửa thông tin liên hệ. Hạng vé và tổng tiền được giữ nguyên.</p><label>Họ và tên<input name="buyer_name" required maxlength="120"></label><label>Email<input name="buyer_email" type="email" required maxlength="254"></label><label>Số điện thoại<input name="buyer_phone" required pattern="[0-9]{9,11}" inputmode="tel"></label><p id="adminMessage" role="alert"></p><div class="result-actions"><button type="button" class="secondary" onclick="this.closest('dialog').close()">Hủy</button><button id="adminSave" class="primary">Lưu thay đổi</button></div></form></dialog>
+  <dialog id="deleteDialog" aria-labelledby="deleteTitle"><h2 id="deleteTitle">Bạn có chắc muốn xóa đơn đặt vé này?</h2><p id="deleteDetail"></p><p>Đơn sẽ bị xóa vĩnh viễn. Thao tác này không hoàn tiền.</p><p id="deleteMessage" role="alert"></p><div class="result-actions"><button class="secondary" autofocus onclick="this.closest('dialog').close()">Hủy</button><button id="confirmDelete" class="primary">Xóa</button></div></dialog>
+  <footer><span>ConcertGo © 2026</span><span>Homework 4 · UI 20260908.3</span></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
+  <script src="script.js?v=booking-review-20260911-2"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "concertgo-booking",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/admin.test.mjs && node tests/session.test.cjs && node tests/checkout.test.cjs && node tests/auth-regression.cjs && node tests/concerts.test.mjs && node tests/env-security.test.mjs",
+    "check": "node --check script.js && node --check api/bookings.js && node --check \"api/bookings/[id].js\" && node --check api/me.js && node --check api/concerts.js && node --check \"api/concerts/[id].js\" && node --check api/config.js && node --check lib/supabase.js"
+  }
+}
