@@ -1,0 +1,2 @@
+import {currentUser,isAdmin,send} from '../lib/supabase.js';
+export default async function handler(req,res){try{if(req.method!=='GET')return send(res,405,{message:'Phương thức không được hỗ trợ.'});const auth=await currentUser(req);if(auth.error)return send(res,auth.error[0],{message:auth.error[1]});return send(res,200,{email:auth.user.email,isAdmin:isAdmin(auth.user)});}catch{return send(res,503,{message:'Không xác minh được quyền. Hãy thử lại.'});}}
